@@ -1,1 +1,117 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package models;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author ADMIN
+ */
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        management ma = new management();
+        
+        
+        boolean quit = false;
+        while (!quit) {
+            System.out.println("=========================MENU===============================");
+            System.out.println("1.Add new vehicle ");
+            System.out.println("2.Check to exist Vehicle");
+            System.out.println("3. Update vehicle ");
+            System.out.println("4.Delete vehicle ");
+            System.out.println("5.Search vehicle");
+            System.out.println("6.Save data to file");
+            System.out.println("6.5. LOAD FILE");
+            System.out.println("7.Print vehicle list");
+            System.out.println("8.ShowMenu");
+            System.out.println("9.----");
+            System.out.println("==========================BYE===============================");
+            int choice = Integer.parseInt(sc.nextLine());
+            switch (choice) {
+                case 1: {
+                    //ma.addNewVehical();
+                    int options;
+                    boolean flag = false;
+                    while (!flag) {
+                        System.out.println("1.Create new vehivle:");
+                        System.out.println("2.Go back menu");
+                        options = Integer.parseInt(sc.nextLine());
+                        switch (options) {
+                            case 1: {
+                                ma.addNewVehical();
+                                break;
+                            }
+                            default:
+                                flag = true;
+                                break;
+                        }
+                    }
+                    break;
+                }
+                case 2: {
+                    ma.checkexistVehicle();
+                    break;
+                }
+                case 3: {
+                    ma.updateVehicle();
+                    break;
+                }
+                case 4: {
+                    ma.Deletevehicle();
+                    break;
+                }
+                case 5: {
+                    System.out.println("=============================================================");
+                    System.out.println("1. Searching by id.");
+                    System.out.println("2. Searching by name.");
+                    System.out.println("3. Others to back to menu.");
+                    int choices ;
+                    boolean flag = false;
+                    while (!flag) {
+                        System.out.println("1.searchById:");
+                        System.out.println("2.SearchbyNameVehicle");
+                        choices = Integer.parseInt(sc.nextLine());
+                        switch (choices) {
+                            case 1: {
+                                ma.searchById();
+                                flag = true;
+                                break;
+                            }
+                            case 2: {
+                                ma.SearchbyNameVehicle();
+                                flag = true;
+                                break;
+                            }
+                            default:
+                                flag = true;
+                                break;
+                        }
+                    }
+                    break;
+                }
+                case 6: {
+                    ma.saveToFile();
+                    break;
+                }
+                case 7: {
+                    ma.loadFromFile();
+                    break;
+                }
+                case 8: {
+                    ma.showMenu();
+                    break;
+                }
+                default:
+                    quit = true;
+                    break;
+            }
+        }
+    }
+}
 
