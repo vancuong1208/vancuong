@@ -1,0 +1,317 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package models;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ *
+ * @author ADMIN
+ */
+public class management extends Vehicles {
+
+    private ArrayList<Vehicles> list = new ArrayList<>();
+    
+    private Scanner sc = new Scanner(System.in);
+
+    public boolean loadFromFile() {
+        // Kiểm tra xem file có tồn tại không trước khi đọc
+        if (!Files.exists(Paths.get("src/data/vehicle.dat"))) {
+            // Nếu file không tồn tại, lặng lẽ thoát khỏi phương thức mà không in thông báo
+            return false;
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/data/vehicle.dat"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] part = line.split(",");
+                if (part.length == 6) {
+                    String id = part[0].trim();
+                    String name = part[1].trim();
+                    String color = part[2].trim();
+                    double price = Double.parseDouble(part[3].trim());
+                    String brand = part[4].trim();
+                    String type = part[5].trim();
+                    int productYears = Integer.parseInt(part[4].trim());
+                    Vehicles ve = new Vehicles(id, name, color, price, brand, type, productYears);
+                    list.add(ve);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+            return true;
+        }
+        return true;
+    }
+
+    public boolean saveToFile() {
+        try (BufferedWriter wr = new BufferedWriter(new FileWriter("src/data/vehicle.dat"))) {
+            for (Vehicles vehicles : list) {
+                wr.write(vehicles.getId() + "," + vehicles.getName() + "," + vehicles.getBrand() + ","
+                        + vehicles.getType() + "," + vehicles.getColor() + "," + vehicles.getPrice() + ","
+                        + vehicles.getProductYear());
+                wr.newLine(); // Xuống dòng sau mỗi đối tượng
+            }
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public int SearchID(String ID) {
+        int N = list.size();
+        for (int i = 0; i < N; i++) {
+            if (list.get(i).getId().equals(ID)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public void addNewVehical() {
+        String id;
+        do {
+            System.out.println("Enter Id");
+            id = sc.nextLine();
+        } while (SearchID(id) != -1);
+        System.out.println("Enter name:");
+        String name = sc.nextLine();
+        System.out.println("Enter color:");
+        String color = sc.nextLine();
+        System.out.println("Enter price");
+        double price = Double.parseDouble(sc.nextLine());
+        System.out.println("Enter brands");
+        String brands = sc.nextLine();
+        System.out.println("Enter type:");
+        String type = sc.nextLine();
+        System.out.println("Enter year");
+        int productYears = Integer.parseInt(sc.nextLine());
+
+        Vehicles ve = new Vehicles(id, name, color, price, brands, type, productYears);
+        list.add(ve);
+    }
+
+    public void checkexistVehicle() {
+        if (list.isEmpty()) {
+            System.out.println("The List is empty!");
+            return;
+        }
+        System.out.println("Enrer id:");
+        String id = sc.nextLine();
+        int pos = SearchID(id);
+        if (pos >= 0) {
+            Printall();
+
+        } else {
+            System.out.println("No Vehicle Found!");
+        }
+    }
+
+    public void updateVehicle() {
+        System.out.print("Enter the vehicle's ID: ");
+        String id = sc.nextLine();
+
+        int pos = SearchID(id);
+        if (pos <= -1) {
+            System.out.println("Vehicle does not exist.");
+            return;
+        }
+        System.out.println("Updating vehicle details.");
+        System.out.print("Enter new name: ");
+        String name = sc.nextLine();
+        if (!name.isEmpty()) {
+            list.get(pos).setName(name);
+        }
+        System.out.print("Enter new brand: ");
+        String brand = sc.nextLine();
+        if (!brand.isEmpty()) {
+            list.get(pos).setBrand(brand);
+        }
+
+        System.out.print("Enter new type: ");
+        String type = sc.nextLine();
+        if (!type.isEmpty()) {
+            list.get(pos).setType(type);
+        }
+
+        System.out.print("Enter new color: ");
+        String color = sc.nextLine();
+        if (!color.isEmpty()) {
+            list.get(pos).setColor(color);
+        }
+        System.out.print("Enter new price: ");
+        double priceValues = Double.parseDouble(sc.nextLine());
+        try {
+            if (priceValues < 0) {
+                System.out.println("Price cannot be negative");
+            } else {
+                list.get(pos).setPrice(priceValues);  // Cập nhật giá nếu hợp lệ
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid price ");
+        }
+        System.out.println("Enter new year");
+        int yearValues = Integer.parseInt(sc.nextLine()); // có liên quan đổi String thành int
+        try {
+            if (yearValues < 0) {
+                System.out.println("Year cannot be negative");
+                list.get(pos).setProductYear(yearValues);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid year format");
+        }
+
+    }
+
+    public int SearchByIDV2(String id) {
+       int N = list.size();
+       for(int i = 0 ; i < N; i++) {
+            if(list.get(i).equals(id)){
+                return i;
+            }
+       }
+       return -1;
+    }
+   
+
+    public void Deletevehicle() {
+        System.out.println("Enter id:");
+        String id;
+        id = sc.nextLine();
+        int pos = SearchID(id);
+        if (pos < 0) {
+            System.out.println("ID Not Founds");
+        } else {
+            list.remove(pos);
+        }
+    }
+
+    public void SearchbyNameVehicle() {
+        System.out.println("Enter names");
+        String name = sc.nextLine().trim();
+        // tạo cái lisit để lưu trữ thông tin khi so sanh tên 
+        List<Vehicles> result = new ArrayList<>();
+        for (Vehicles vehicle : list) {
+            if (vehicle.getName().toLowerCase().contains(name)) {
+                // add vào nó trả ngược về cái LIST
+                result.add(vehicle);
+            }
+        }
+        Collections.sort(result, new Comparator<Vehicles>() {
+            @Override
+            public int compare(Vehicles o1, Vehicles o2) {
+                return Double.compare(o2.getPrice(), o1.getPrice());
+            }
+        });
+        if (result.isEmpty()) {
+            System.out.println("No vehicles found with the name:");
+        } else {
+            for (Vehicles vehicles : result) {
+                print(vehicles);
+            }
+        }
+    }
+
+    private void print(Vehicles vehicles) {
+        System.out.println("~~>Vehicle Found");
+        System.out.printf("| %-10s | %-20s | %-14s | %-10s | %-12s | %-8s | %-4s |\n",
+                "ID", "Name", "Color", "Price", "Brand", "Type", "Year");
+        System.out.printf("| %-10s | %-20s | %-14s | %-10.2f | %-12s | %-8s | %-4d |\n",
+                vehicles.getId(),
+                vehicles.getName(),
+                vehicles.getColor(),
+                vehicles.getPrice(),
+                vehicles.getBrand(),
+                vehicles.getType(),
+                vehicles.getProductYear());
+    }
+
+    public void searchById() {
+        System.out.println("ENTER ID");
+        String id = sc.nextLine();
+        int pos = SearchID(id);
+        if (pos >= 0) {
+            System.out.println("~~>Vehicle Found");
+            System.out.printf("| %-10s | %-20s | %-14s | %-10s | %-12s | %-8s | %-4s |\n",
+                              "ID", "Name", "Color", "Price", "Brand", "Type", "Year");
+            System.out.printf("| %-10s | %-20s | %-14s | %-10.2f | %-12s | %-8s | %-4d |\n",
+                    list.get(pos).getId(),
+                    list.get(pos).getName(),
+                    list.get(pos).getColor(),
+                    list.get(pos).getPrice(),
+                    list.get(pos).getBrand(),
+                    list.get(pos).getType(),
+                    list.get(pos).getProductYear());
+        } else {
+            System.out.println("~~>No Vehicle Found!");
+        }
+    }
+
+    public void Printall() {
+        for (Vehicles vehicles : list) {
+            Prinftall(vehicles);
+        }
+    }
+
+    private void Prinftall(Vehicles vehicles) {
+        System.out.println("~~>Vehicle Found");
+        System.out.printf("| %-10s | %-20s | %-14s | %-10s | %-12s | %-8s | %-4s |\n",
+                "ID", "Name", "Color", "Price", "Brand", "Type", "Year");
+        System.out.printf("| %-10s | %-20s | %-14s | %-10.2f | %-12s | %-8s | %-4d |\n",
+                vehicles.getId(),
+                vehicles.getName(),
+                vehicles.getColor(),
+                vehicles.getPrice(),
+                vehicles.getBrand(),
+                vehicles.getType(),
+                vehicles.getProductYear());
+    }
+
+    public void PrintallbyPriceVehicle() {
+        if (list.isEmpty()) {
+            System.out.println("No vehicles found.");
+        }
+        Collections.sort(list, new Comparator<Vehicles>() {
+            @Override
+            public int compare(Vehicles o1, Vehicles o2) {
+                return Double.compare(o2.getPrice(), o1.getPrice());
+            }
+        });
+        for (Vehicles vehicles : list) {
+            print(vehicles);
+        }
+    }
+    
+    public void showMenu() {
+        System.out.println("Select an option:");
+        System.out.println("1. Show all vehicles");
+        System.out.println("2. Show all vehicles (descending by price)");
+        System.out.println("3. Exit");
+        int choice = Integer.parseInt(sc.nextLine());
+        switch (choice) {
+            case 1: {
+                Printall();
+                break;
+            }
+            case 2: {
+                PrintallbyPriceVehicle();
+                break;
+            }
+            default:
+                System.out.println("Invalid choice. Try again.");
+                showMenu();
+        }
+    }
